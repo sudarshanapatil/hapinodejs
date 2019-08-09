@@ -6,18 +6,22 @@ const codes = {
     },
     success: {
         code: 200,
-        data: "Successfully deleted modality"
+        message: "Successfully deleted modality"
     }
 
 }
-exports.delete = (connection,payload) => {
+exports.delete = (connection, payload) => {
     //console.log(connection,"==connection")
     return new Promise((resolve, reject) => {
-        let {id} =payload;
-        let query=`delete from modality where id=${id}`
+        console.log(payload,"here====")
+        let { id } = payload;
+        console.log(payload, id,"=======")
+        let query = `delete from modality where modId=${id}`
         connection.query(query, (err, res, feild) => {
             if (err)
-                reject(codes.err)
+                {reject(codes.err)
+                console.log(err)
+                }
             else {
                 console.log(err, res)
                 codes.success.data = res;

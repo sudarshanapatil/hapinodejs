@@ -5,6 +5,7 @@ const Inert = require('inert');
 const Vision = require('vision');
 const HapiSwagger = require('hapi-swagger');
 const MySQL = require('mysql');
+const cors = require('cors')
 
 const connection = MySQL.createConnection({
     host: 'localhost',
@@ -18,7 +19,7 @@ connection.connect()
 
 const { configureRoutes } = require('./route')
 //For API Documentation
-const swaggerOptions = {                            
+const swaggerOptions = {
     info: {
         title: 'FeildGenie API Documentation',
         version: '0.0.1',
@@ -28,7 +29,8 @@ const swaggerOptions = {
 const init = async () => {
     const server = Hapi.server({
         port: 3000,
-        host: 'localhost'
+        host: 'localhost',
+        routes: { cors: true }
     });
     await server.register([
         Inert,
@@ -39,13 +41,13 @@ const init = async () => {
         }
     ]);
     //console.log(connection,"in server conn")
-    await configureRoutes(server,connection)
+    await configureRoutes(server, connection)
     await server.start();
     console.log('Server running on %ss', server.info.uri);
 };
 
 process.on('unhandledRejection', (err) => {
-console.log(err);
+    console.log(err);
     process.exit(1);
 });
 

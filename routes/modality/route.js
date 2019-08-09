@@ -9,8 +9,8 @@ exports.modRoutes = (connection) => {
             method: 'GET',
             path: '/apis/modality/list',
             options: {
-                description: 'Get task list',
-                notes: 'Returns an array of task',
+                description: 'Get modality list',
+                notes: 'Returns an array of modalities',
                 tags: ['api'],
             },
             handler: async function (request, h) {
@@ -23,8 +23,8 @@ exports.modRoutes = (connection) => {
             method: 'POST',
             path: '/apis/modality/edit',
             options: {
-                description: 'Get task list',
-                notes: 'Returns an array of task',
+                description: 'Edit Modality',
+                notes: 'Edits modaliy depending on id',
                 tags: ['api'],
             },
             handler: async function (request, h) {
@@ -37,12 +37,12 @@ exports.modRoutes = (connection) => {
             method: 'POST',
             path: '/apis/modality/delete',
             options: {
-                description: 'Get task list',
-                notes: 'Returns an array of task',
+                description: 'Deletes Modality',
+                notes: 'Delete modality',
                 tags: ['api'],
             },
             handler: async function (request, h) {
-                let data = await deleteMod.delete(connection)
+                let data = await deleteMod.delete(connection,request.payload)
                 return data;
             }
         },
@@ -50,8 +50,8 @@ exports.modRoutes = (connection) => {
             method: 'POST',
             path: '/apis/modality/getbyid',
             options: {
-                description: 'Get task list',
-                notes: 'Returns an array of task',
+                description: 'Get Modality by id',
+                notes: 'Returns modality',
                 tags: ['api'],
             },
             handler: async function (request, h) {
@@ -75,8 +75,8 @@ exports.modRoutes = (connection) => {
             },
             options: {
                 auth: false,
-                description: 'Add task to a list',
-                notes: 'adds task to an array of task',
+                description: 'Adds new Modality ',
+                notes: 'Adds new modality',
                 tags: ['api'],
                 //Joi validation to be added
                 // validate: {

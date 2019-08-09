@@ -6,15 +6,16 @@ const codes = {
     },
     success: {
         code: 200,
-        data: "Successfully added modality",
+        message: "Successfully added modality",
     }
 }
 exports.add = (payload, connection) => {
-    let { name, discription, comment } = payload;
+    let { name, description, comment } = payload;
     return new Promise((resolve, reject) => {
-        let query = `insert into modality (name,description,comment) values ("${name}","${discription}","${comment}")`
+        let query = `insert into modality (modId,name,description,comment) values (100,"${name}","${description}","${comment}")`
         connection.query(query, (err, res, feild) => {
             if (err) {
+                console.log("here================",err)
                 reject(codes.err)
             }
             else {
