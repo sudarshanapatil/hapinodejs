@@ -1,8 +1,5 @@
-const addProd = require('../../models/product/add')
-const listProd = require('../../models/product/list')
-const editProd = require('../../models/product/edit')
-const deleteProd = require('../../models/product/delete')
-const getProdById = require('../../models/product/getById')
+const product = require('../../models/product');
+
 exports.prodRoutes = (connection) => {
     let routesArr = [
         {
@@ -14,7 +11,7 @@ exports.prodRoutes = (connection) => {
                 tags: ['api'],
             },
             handler: async function (request, h) {
-                let data = await listMod.list(connection)
+                let data = await product.get(connection)
                 console.log(data, "in route")
                 return data;
             }
@@ -28,7 +25,7 @@ exports.prodRoutes = (connection) => {
                 tags: ['api'],
             },
             handler: async function (request, h) {
-                let data = await editMod.edit(connection)
+                let data = await product.edit(connection)
                 console.log(data, "in route")
                 return data;
             }
@@ -42,7 +39,7 @@ exports.prodRoutes = (connection) => {
                 tags: ['api'],
             },
             handler: async function (request, h) {
-                let data = await deleteMod.delete(connection)
+                let data = await product.destroy(connection)
                 return data;
             }
         },
@@ -56,7 +53,7 @@ exports.prodRoutes = (connection) => {
             },
             handler: async function (request, h) {
                 let payload = request.payload;
-                let data = await getModById.getById(connection, payload)
+                let data = await product.get(connection, payload)
                 return data;
             }
         },
@@ -66,7 +63,7 @@ exports.prodRoutes = (connection) => {
             handler: async (request, h) => {
                 const payload = request.payload;
                 try {
-                    let data = await addProd.add(payload, connection)
+                    let data = await product.add(payload, connection)
                     console.log(data, "test")
                     return data
                 }
