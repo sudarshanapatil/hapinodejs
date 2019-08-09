@@ -10,7 +10,7 @@ const codes = {
   }
 }
 
-exports.get = (connection, payload = {}) => {
+module.exports = (connection, payload = {}) => {
   return new Promise((resolve, reject) => {
     const query = query_builder(payload);
     connection.query(query, (err, res, field) => {
@@ -27,6 +27,6 @@ exports.get = (connection, payload = {}) => {
 const query_builder = (payload) => {
   query_params = Object.keys(payload);
   let query = `SELECT * FROM product where 1`;
-  query = query_params.reduce((accum, param) => (accum + ` AND ${param} = ${payload[param]}`), query);
+  query = query_params.reduce((accum, param) => (accum + ` AND ${param} = "${payload[param]}"`), query);
   return query;
 }

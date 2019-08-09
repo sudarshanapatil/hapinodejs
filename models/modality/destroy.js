@@ -10,7 +10,7 @@ const codes = {
   }
 }
 
-exports.destroy = (connection,payload) => {
+module.exports = (connection,payload) => {
   return new Promise((resolve, reject) => {
     let {id} =payload;
     let query=`delete from modality where id=${id}`
