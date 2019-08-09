@@ -2,26 +2,26 @@ const codes = {
     err:
     {
         code: 402,
-        mesaage: "Required modality doesnot exist"
+        mesaage: "Error in editing product"
     },
     success: {
         code: 200,
-        data: ""
+        data: "Successfully edited product"
     }
 
 }
-exports.getById = (connection, payload) => {
-    //console.log(connection,"==connection")
+exports.edit = (connection, payload) => {
+    //edits modality
     return new Promise((resolve, reject) => {
-        console.log(payload, " : payload")
-        let { id } = payload;
-        let query = `select * from modality where modId=${id}`
+        let { id, feild, newValue } = payload;
+
+        let query = `update product set "${feild}"="${newValue}" where id=${id}`
         connection.query(query, (err, res, feild) => {
             if (err)
                 reject(codes.err)
             else {
                 console.log(err, res)
-                codes.success.data = res;
+                //codes.success.data = res;
                 resolve(codes.success);
             }
         })

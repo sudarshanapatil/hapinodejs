@@ -1,4 +1,4 @@
-const addMod = require('../../models/modality/create')
+const addMod = require('../../models/modality/add')
 const listMod = require('../../models/modality/list')
 const editMod = require('../../models/modality/edit')
 const deleteMod = require('../../models/modality/delete')
@@ -7,7 +7,7 @@ exports.modRoutes = (connection) => {
     let routesArr = [
         {
             method: 'GET',
-            path: '/list',
+            path: '/apis/modality/list',
             options: {
                 description: 'Get task list',
                 notes: 'Returns an array of task',
@@ -21,7 +21,7 @@ exports.modRoutes = (connection) => {
         },
         {
             method: 'POST',
-            path: '/edit',
+            path: '/apis/modality/edit',
             options: {
                 description: 'Get task list',
                 notes: 'Returns an array of task',
@@ -35,7 +35,7 @@ exports.modRoutes = (connection) => {
         },
         {
             method: 'POST',
-            path: '/delete',
+            path: '/apis/modality/delete',
             options: {
                 description: 'Get task list',
                 notes: 'Returns an array of task',
@@ -48,7 +48,7 @@ exports.modRoutes = (connection) => {
         },
         {
             method: 'POST',
-            path: '/getbyid',
+            path: '/apis/modality/getbyid',
             options: {
                 description: 'Get task list',
                 notes: 'Returns an array of task',
@@ -62,13 +62,12 @@ exports.modRoutes = (connection) => {
         },
         {
             method: 'POST',
-            path: '/add',
+            path: '/apis/modality/add',
             handler: async (request, h) => {
                 const payload = request.payload;
                 try {
                     let data = await addMod.add(payload, connection)
-                    console.log(data, "test")
-                    return data
+                    return data;
                 }
                 catch (err) {
                     return err
@@ -79,6 +78,7 @@ exports.modRoutes = (connection) => {
                 description: 'Add task to a list',
                 notes: 'adds task to an array of task',
                 tags: ['api'],
+                //Joi validation to be added
                 // validate: {
                 //     payload: {
                 //         username: Joi.string().min(1).max(20),

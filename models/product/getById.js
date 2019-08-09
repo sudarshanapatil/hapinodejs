@@ -2,7 +2,7 @@ const codes = {
     err:
     {
         code: 402,
-        mesaage: "Required modality doesnot exist"
+        mesaage: "Required product doesnot exist"
     },
     success: {
         code: 200,
@@ -15,7 +15,7 @@ exports.getById = (connection, payload) => {
     return new Promise((resolve, reject) => {
         console.log(payload, " : payload")
         let { id } = payload;
-        let query = `select * from modality where modId=${id}`
+        let query = `select * from product where prodId=${id}`
         connection.query(query, (err, res, feild) => {
             if (err)
                 reject(codes.err)

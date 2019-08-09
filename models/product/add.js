@@ -2,29 +2,28 @@ const codes = {
     err:
     {
         code: 402,
-        mesaage: "Required modality doesnot exist"
+        mesaage: "problem in adding product"
     },
     success: {
         code: 200,
-        data: ""
+        data: "Successfully added product",
     }
-
 }
-exports.getById = (connection, payload) => {
-    //console.log(connection,"==connection")
+exports.add = (payload, connection) => {
+    let { name, discription, comment } = payload;
     return new Promise((resolve, reject) => {
-        console.log(payload, " : payload")
-        let { id } = payload;
-        let query = `select * from modality where modId=${id}`
+        let query = `insert into product(name,description,comment) values ("${name}","${discription}","${comment}")`
         connection.query(query, (err, res, feild) => {
-            if (err)
+            if (err) {
                 reject(codes.err)
+            }
             else {
                 console.log(err, res)
-                codes.success.data = res;
                 resolve(codes.success);
             }
         })
 
     })
 }
+
+

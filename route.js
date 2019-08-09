@@ -1,11 +1,14 @@
 const modRoutes=require('./routes/modality/route')
+const prodRoutes=require('./routes/product/route')
 
 //All Routes are defined here
 exports.configureRoutes = (server, connection) => {
    //get all routes for Modality 
-   let data=modRoutes.modRoutes(connection)
+   let modArr=modRoutes.modRoutes(connection)
+   let prodArr=prodRoutes.prodRoutes(connection)
+   let allRoutes=modArr.concat(prodArr)
 
    //get all routes for products
-   
-    return server.route(data)
+   console.log(allRoutes)
+    return server.route(allRoutes)
 }

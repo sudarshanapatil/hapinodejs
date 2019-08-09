@@ -2,20 +2,19 @@ const codes = {
     err:
     {
         code: 402,
-        mesaage: "Required modality doesnot exist"
+        mesaage: "Error in deleting product"
     },
     success: {
         code: 200,
-        data: ""
+        data: "Successfully deleted product"
     }
 
 }
-exports.getById = (connection, payload) => {
+exports.delete = (connection,payload) => {
     //console.log(connection,"==connection")
     return new Promise((resolve, reject) => {
-        console.log(payload, " : payload")
-        let { id } = payload;
-        let query = `select * from modality where modId=${id}`
+        let {id} =payload;
+        let query=`delete from product where id=${id}`
         connection.query(query, (err, res, feild) => {
             if (err)
                 reject(codes.err)
