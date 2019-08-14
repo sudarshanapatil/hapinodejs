@@ -1,6 +1,5 @@
 const codes = {
-    err:
-    {
+    err: {
         code: 402,
         mesaage: "problem in adding modality"
     },
@@ -9,18 +8,20 @@ const codes = {
         message: "Successfully added modality",
     }
 }
-exports.add = (payload, connection) => {
+module.exports = (connection, payload, save) => {
     let { name, description, comment } = payload;
     return new Promise((resolve, reject) => {
-        let query = `insert into modality (modId,name,description,comment) values (100,"${name}","${description}","${comment}")`
+        let query = `insert into modality (name,description,comment) values ("${name}","${description}","${comment}")`
         connection.query(query, (err, res, feild) => {
             if (err) {
-                console.log("here================",err)
+                console.log(err, " : err")
                 reject(codes.err)
             }
             else {
                 console.log(err, res)
                 resolve(codes.success);
+                let userId = 1011;
+                save(connection, userId, "modality", name, "add")
             }
         })
 

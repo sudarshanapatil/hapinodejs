@@ -1,6 +1,5 @@
 const codes = {
-    err:
-    {
+    err: {
         code: 402,
         mesaage: "Error in editing modality"
     },
@@ -8,23 +7,25 @@ const codes = {
         code: 200,
         data: "Successfully edited modality"
     }
-
 }
-exports.edit = (connection,payload) => {
-//edits modality
+module.exports = (connection, payload, save) => {
+    //edits modality
     return new Promise((resolve, reject) => {
-        let {id,feild,newValue} =payload;
-        
-        let query=`update modaliy set "${feild}"="${newValue}" where id=${id}`
+        let { id, description, name } = payload;
+        let query = `update modality set name="${name}"  ,description="${description}" where modId=${id}`
         connection.query(query, (err, res, feild) => {
-            if (err)
+            if (err) {
                 reject(codes.err)
+                console.log(err)
+            }
             else {
                 console.log(err, res)
                 //codes.success.data = res;
                 resolve(codes.success);
+                //TODO: get userId from payload
+                let userId = 1;
+                save(connection, userId, "modality", name, "edit")
             }
         })
-
     })
 }

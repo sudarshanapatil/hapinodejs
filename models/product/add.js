@@ -1,6 +1,5 @@
 const codes = {
-    err:
-    {
+    err: {
         code: 402,
         mesaage: "problem in adding product"
     },
@@ -9,20 +8,23 @@ const codes = {
         data: "Successfully added product",
     }
 }
-exports.add = (payload, connection) => {
-    let { name, discription, comment } = payload;
+module.exports = (connection, payload, save) => {
+    let { name, description, modId } = payload;
     return new Promise((resolve, reject) => {
-        let query = `insert into product(name,description,comment) values ("${name}","${discription}","${comment}")`
+        let comment = 'test'
+        let query = `insert into product(name,description,comment,modId) values ("${name}","${description}","${comment}","${modId}")`
         connection.query(query, (err, res, feild) => {
             if (err) {
+                console.log(err, " :err")
                 reject(codes.err)
             }
             else {
                 console.log(err, res)
                 resolve(codes.success);
+                let userId = 1011;
+                save(connection, userId, "product", name, "add")
             }
         })
-
     })
 }
 

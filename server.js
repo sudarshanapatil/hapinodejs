@@ -6,7 +6,7 @@ const Vision = require('vision');
 const HapiSwagger = require('hapi-swagger');
 const MySQL = require('mysql');
 const cors = require('cors')
-
+const moment = require('moment')
 const connection = MySQL.createConnection({
     host: 'localhost',
     user: 'root',
@@ -25,6 +25,23 @@ const swaggerOptions = {
         version: '0.0.1',
     }
 };
+const save = (connection, userId, serviceType, serviceTypeName, actionType) => {
+    return new Promise((resolve, reject) => {
+        let timestamp = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+        let query = `insert into logs (userId, serviceType, serviceTypeName, actionType, timestamp) 
+         values ("${userId}","${serviceType}","${serviceTypeName}","${actionType}","${timestamp}")`
+        connection.query(query, (err, res, feild) => {
+            if (err) {
+                console.log(err, ": err")
+                reject()
+            }
+            else {
+                console.log(err, res)
+                resolve();
+            }
+        })
+    })
+}
 
 const init = async () => {
     const server = Hapi.server({
@@ -41,8 +58,9 @@ const init = async () => {
         }
     ]);
     //console.log(connection,"in server conn")
-    await configureRoutes(server, connection)
+    await configureRoutes(server, connection, save)
     await server.start();
+
     console.log('Server running on %ss', server.info.uri);
 };
 
@@ -50,5 +68,9 @@ process.on('unhandledRejection', (err) => {
     console.log(err);
     process.exit(1);
 });
+
+
+
+
 
 init();

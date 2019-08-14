@@ -1,9 +1,5 @@
-const addMod = require('../../models/modality/add')
-const listMod = require('../../models/modality/list')
-const editMod = require('../../models/modality/edit')
-const deleteMod = require('../../models/modality/delete')
-const getModById = require('../../models/modality/getById')
-exports.modRoutes = (connection) => {
+const Modality = require('../../models/modality/')
+exports.modRoutes = (connection, save) => {
     let routesArr = [
         {
             method: 'GET',
@@ -14,8 +10,7 @@ exports.modRoutes = (connection) => {
                 tags: ['api'],
             },
             handler: async function (request, h) {
-                let data = await listMod.list(connection)
-                console.log(data, "in route")
+                let data = await Modality.list(connection)
                 return data;
             }
         },
@@ -28,8 +23,7 @@ exports.modRoutes = (connection) => {
                 tags: ['api'],
             },
             handler: async function (request, h) {
-                let data = await editMod.edit(connection)
-                console.log(data, "in route")
+                let data = await Modality.edit(connection, request.payload, save)
                 return data;
             }
         },
@@ -42,7 +36,7 @@ exports.modRoutes = (connection) => {
                 tags: ['api'],
             },
             handler: async function (request, h) {
-                let data = await deleteMod.delete(connection,request.payload)
+                let data = await Modality.destroy(connection, request.payload, save)
                 return data;
             }
         },
@@ -56,7 +50,7 @@ exports.modRoutes = (connection) => {
             },
             handler: async function (request, h) {
                 let payload = request.payload;
-                let data = await getModById.getById(connection, payload)
+                let data = await Modality.getById(connection, payload)
                 return data;
             }
         },
@@ -66,7 +60,7 @@ exports.modRoutes = (connection) => {
             handler: async (request, h) => {
                 const payload = request.payload;
                 try {
-                    let data = await addMod.add(payload, connection)
+                    let data = await Modality.add(connection, payload, save)
                     return data;
                 }
                 catch (err) {

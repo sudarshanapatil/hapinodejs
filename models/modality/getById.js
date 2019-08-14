@@ -1,6 +1,5 @@
 const codes = {
-    err:
-    {
+    err: {
         code: 402,
         mesaage: "Required modality doesnot exist"
     },
@@ -8,9 +7,8 @@ const codes = {
         code: 200,
         data: ""
     }
-
 }
-exports.getById = (connection, payload) => {
+module.exports = (connection, payload) => {
     //console.log(connection,"==connection")
     return new Promise((resolve, reject) => {
         console.log(payload, " : payload")
@@ -25,6 +23,5 @@ exports.getById = (connection, payload) => {
                 resolve(codes.success);
             }
         })
-
     })
 }

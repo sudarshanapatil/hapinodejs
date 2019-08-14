@@ -1,12 +1,8 @@
-const addProd = require('../../models/product/add')
-const listProd = require('../../models/product/list')
-const editProd = require('../../models/product/edit')
-const deleteProd = require('../../models/product/delete')
-const getProdById = require('../../models/product/getById')
-exports.prodRoutes = (connection) => {
+const Product = require('../../models/product/')
+exports.prodRoutes = (connection, save) => {
     let routesArr = [
         {
-            method: 'GET',
+            method: 'POST',
             path: '/apis/product/list',
             options: {
                 description: 'Get task list',
@@ -14,7 +10,7 @@ exports.prodRoutes = (connection) => {
                 tags: ['api'],
             },
             handler: async function (request, h) {
-                let data = await listMod.list(connection)
+                let data = await Product.list(connection, request.payload)
                 console.log(data, "in route")
                 return data;
             }
@@ -28,7 +24,7 @@ exports.prodRoutes = (connection) => {
                 tags: ['api'],
             },
             handler: async function (request, h) {
-                let data = await editMod.edit(connection)
+                let data = await Product.edit(connection, request.payload, save)
                 console.log(data, "in route")
                 return data;
             }
@@ -42,7 +38,7 @@ exports.prodRoutes = (connection) => {
                 tags: ['api'],
             },
             handler: async function (request, h) {
-                let data = await deleteMod.delete(connection)
+                let data = await Product.destroy(connection, request.payload, save)
                 return data;
             }
         },
@@ -55,8 +51,7 @@ exports.prodRoutes = (connection) => {
                 tags: ['api'],
             },
             handler: async function (request, h) {
-                let payload = request.payload;
-                let data = await getModById.getById(connection, payload)
+                let data = await Product.getById(connection, request.payload)
                 return data;
             }
         },
@@ -64,13 +59,14 @@ exports.prodRoutes = (connection) => {
             method: 'POST',
             path: '/apis/product/add',
             handler: async (request, h) => {
-                const payload = request.payload;
+                console.log("im here")
                 try {
-                    let data = await addProd.add(payload, connection)
+                    let data = await Product.add(connection, request.payload, save)
                     console.log(data, "test")
                     return data
                 }
                 catch (err) {
+                    console.log(err, "here err")
                     return err
                 }
             },
@@ -89,6 +85,5 @@ exports.prodRoutes = (connection) => {
             }
         }
     ]
-
     return routesArr;
 }

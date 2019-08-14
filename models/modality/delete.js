@@ -1,6 +1,5 @@
 const codes = {
-    err:
-    {
+    err: {
         code: 402,
         mesaage: "Error in deleting modality"
     },
@@ -8,26 +7,25 @@ const codes = {
         code: 200,
         message: "Successfully deleted modality"
     }
-
 }
-exports.delete = (connection, payload) => {
-    //console.log(connection,"==connection")
-    return new Promise((resolve, reject) => {
-        console.log(payload,"here====")
+module.exports = (connection, payload, save) => {
+   return new Promise((resolve, reject) => {
         let { id } = payload;
-        console.log(payload, id,"=======")
         let query = `delete from modality where modId=${id}`
         connection.query(query, (err, res, feild) => {
-            if (err)
-                {reject(codes.err)
+            if (err) {
+                reject(codes.err)
                 console.log(err)
-                }
+            }
             else {
                 console.log(err, res)
                 codes.success.data = res;
                 resolve(codes.success);
+                //TODO: get userId from payload
+                let userId = 1;
+                //TODO: add name in API 
+                save(connection, userId, "modality", "test", "delete")
             }
         })
-
     })
 }

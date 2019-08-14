@@ -1,6 +1,5 @@
 const codes = {
-    err:
-    {
+    err: {
         code: 402,
         mesaage: "Required product doesnot exist"
     },
@@ -8,10 +7,8 @@ const codes = {
         code: 200,
         data: ""
     }
-
 }
-exports.getById = (connection, payload) => {
-    //console.log(connection,"==connection")
+module.exports = (connection, payload) => {
     return new Promise((resolve, reject) => {
         console.log(payload, " : payload")
         let { id } = payload;
@@ -25,6 +22,5 @@ exports.getById = (connection, payload) => {
                 resolve(codes.success);
             }
         })
-
     })
 }
