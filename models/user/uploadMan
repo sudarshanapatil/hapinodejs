@@ -1,0 +1,56 @@
+
+const fs = require('fs')
+const unzipper = require(`unzipper`)
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+module.exports = async (knex, payload, save) => {
+  let folderName = payload["file"].hapi.filename.split('.')
+  console.log(folderName[0], " :: foldername\n", payload["file"].hapi.filename, ":: zip file")
+  let data = await payload["file"].pipe(fs.createWriteStream(__dirname + "../../../uploads/" + payload["file"].hapi.filename)
+    .on('finish', async () => {
+      await fs.createReadStream(`./uploads/${payload["file"].hapi.filename}`)
+        .pipe(unzipper.Extract({ path: `./uploads/` }))
+        .on('finish', () => {
+          console.log('reading Directory........', `../../../uploads/${folderName[0]}`)
+          fs.readdir(`./uploads/${folderName[0]}`, (err, files) => {
+            if (err)
+              console.log(err)
+            console.log(files,":: filesArray")
+            files.forEach(file => {
+              if (file.includes('.html')) {
+                console.log(`./uploads/${folderName[0]}/${file}`, "traversing dir");
+                fs.readFile(`./uploads/${folderName[0]}/${file}`, 'utf8', (err, data) => {
+                  if (err) throw err;
+                  //console.log(data)
+                  const dom = new JSDOM(`${data}`, { includeNodeLocations: true });
+                  let imageSrc = dom.window.document.querySelector("img").getAttribute('src');
+                  console.log(imageSrc, "imageRsc======================")
+                  var imageAsBase64 = fs.readFileSync(`./uploads/${folderName[0]}/${imageSrc}`, 'base64');
+                  let newdata = 'data:image/png;base64, ' + imageAsBase64
+                  let modifiedData = data.replace(imageSrc, newdata);
+                  fs.writeFile(`./uploads/${folderName[0]}/myFile1.html`, modifiedData, function (err) {
+                    if (err) {
+                      console.log(err);
+                    }
+                    console.log("The file was saved!");
+                  });
+                })
+              }
+            })
+          })
+        })
+    }))
+
+  return 200;
+
+}
+const codes = {
+  err: {
+    code: 402,
+    mesaage: "problem in adding modality"
+  },
+  success: {
+    code: 200,
+    message: "Successfully added modality",
+  }
+}
