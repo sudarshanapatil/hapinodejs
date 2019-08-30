@@ -5,44 +5,58 @@ const jsdom = require("jsdom");
 const { JSDOM } = jsdom;
 module.exports = async (knex, payload, save) => {
   let folderName = payload["file"].hapi.filename.split('.')
-  console.log(folderName[0], " :: foldername\n", payload["file"].hapi.filename, ":: zip file")
-  let data = await payload["file"].pipe(fs.createWriteStream(__dirname + "../../../uploads/" + payload["file"].hapi.filename)
-    .on('finish', async () => {
-      await fs.createReadStream(`./uploads/${payload["file"].hapi.filename}`)
+  //Download zipfile on server in uploads directory
+  let data = payload["file"].pipe(fs.createWriteStream(__dirname + "../../../uploads/" + payload["file"].hapi.filename)
+    .on('finish', () => {
+      fs.createReadStream(`./uploads/${payload["file"].hapi.filename}`)
+        //Unzip the folder in same Uploads directory
         .pipe(unzipper.Extract({ path: `./uploads/` }))
         .on('finish', () => {
-          console.log('reading Directory........', `../../../uploads/${folderName[0]}`)
+          //Browse through directory and search HTML file
           fs.readdir(`./uploads/${folderName[0]}`, (err, files) => {
-            if (err)
-              console.log(err)
-            console.log(files,":: filesArray")
-            files.forEach(file => {
-              if (file.includes('.html')) {
-                console.log(`./uploads/${folderName[0]}/${file}`, "traversing dir");
-                fs.readFile(`./uploads/${folderName[0]}/${file}`, 'utf8', (err, data) => {
-                  if (err) throw err;
-                  //console.log(data)
-                  const dom = new JSDOM(`${data}`, { includeNodeLocations: true });
-                  let imageSrc = dom.window.document.querySelector("img").getAttribute('src');
-                  console.log(imageSrc, "imageRsc======================")
-                  var imageAsBase64 = fs.readFileSync(`./uploads/${folderName[0]}/${imageSrc}`, 'base64');
-                  let newdata = 'data:image/png;base64, ' + imageAsBase64
-                  let modifiedData = data.replace(imageSrc, newdata);
-                  fs.writeFile(`./uploads/${folderName[0]}/myFile1.html`, modifiedData, function (err) {
-                    if (err) {
-                      console.log(err);
-                    }
-                    console.log("The file was saved!");
-                  });
+            {
+              if (err)
+                console.log(err)
+            }
+            let imageFileArray = [];
+            let htmlFile;
+            //Find all image files so that afterwoards can be converted into base64
+            for (let i in files) {
+              if (files[i].includes('.jpg') || files[i].includes('.png')) {
+                //Put all imageFiles names in array
+                imageFileArray.push(files[i])
+              }
+              else {
+                htmlFile = files[i];
+              }
+            }
+            fs.readFile(`./uploads/${folderName[0]}/${htmlFile}`, 'utf8', (err, data) => {
+              if (err) throw err;
+              else {
+                imageFileArray.forEach(imageFile => {
+                  let extn = imageFile.split('.')
+                  let imageAsBase64 = fs.readFileSync(`./uploads/${folderName[0]}/${imageFile}`, 'base64');
+                  let pathReplace = `data:image/${extn[1]};base64, ` + imageAsBase64;
+                  data = data.replace(imageFile, pathReplace);
+                  let oldCss = `<div class="edocWCNTitle">WARNING</div><div class="edocWCNBody">`
+                  let newCss = `<div style="background-color: #2596D1; color: #FFFFFF;font-size:100%;font-weight: bold;margin-bottom: 10px;padding: 5px">WARNING</div>`
+                  if(data.contains("WARNING") ||data.contains("CAUTION") ||data.contains("WARNING") ){
+                    data.replace(oldCss,newCss)
+                  }
                 })
+
+                fs.writeFile(`./uploads/${folderName[0]}/tp.html`, data, function (err, res) {
+                  if (err) {
+                    console.log(err);
+                  }
+                  console.log("The file was saved!", `./uploads/${folderName[0]}/${htmlFile}`, res);
+                  return (codes.success);
+                });
               }
             })
           })
         })
     }))
-
-  return 200;
-
 }
 const codes = {
   err: {
