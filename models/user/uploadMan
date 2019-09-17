@@ -1,70 +1,185 @@
-
-const fs = require('fs')
+'use strict'
 const unzipper = require(`unzipper`)
-const jsdom = require("jsdom");
-const { JSDOM } = jsdom;
-module.exports = async (knex, payload, save) => {
-  let folderName = payload["file"].hapi.filename.split('.')
-  //Download zipfile on server in uploads directory
-  let data = payload["file"].pipe(fs.createWriteStream(__dirname + "../../../uploads/" + payload["file"].hapi.filename)
-    .on('finish', () => {
-      fs.createReadStream(`./uploads/${payload["file"].hapi.filename}`)
-        //Unzip the folder in same Uploads directory
-        .pipe(unzipper.Extract({ path: `./uploads/` }))
-        .on('finish', () => {
-          //Browse through directory and search HTML file
-          fs.readdir(`./uploads/${folderName[0]}`, (err, files) => {
-            {
-              if (err)
-                console.log(err)
-            }
-            let imageFileArray = [];
-            let htmlFile;
-            //Find all image files so that afterwoards can be converted into base64
-            for (let i in files) {
-              if (files[i].includes('.jpg') || files[i].includes('.png')) {
-                //Put all imageFiles names in array
-                imageFileArray.push(files[i])
-              }
-              else {
-                htmlFile = files[i];
-              }
-            }
-            fs.readFile(`./uploads/${folderName[0]}/${htmlFile}`, 'utf8', (err, data) => {
-              if (err) throw err;
-              else {
-                imageFileArray.forEach(imageFile => {
-                  let extn = imageFile.split('.')
-                  let imageAsBase64 = fs.readFileSync(`./uploads/${folderName[0]}/${imageFile}`, 'base64');
-                  let pathReplace = `data:image/${extn[1]};base64, ` + imageAsBase64;
-                  data = data.replace(imageFile, pathReplace);
-                  let oldCss = `<div class="edocWCNTitle">WARNING</div><div class="edocWCNBody">`
-                  let newCss = `<div style="background-color: #2596D1; color: #FFFFFF;font-size:100%;font-weight: bold;margin-bottom: 10px;padding: 5px">WARNING</div>`
-                  if(data.contains("WARNING") ||data.contains("CAUTION") ||data.contains("WARNING") ){
-                    data.replace(oldCss,newCss)
-                  }
-                })
 
-                fs.writeFile(`./uploads/${folderName[0]}/tp.html`, data, function (err, res) {
-                  if (err) {
-                    console.log(err);
+// const Boom = require('boom')
+const Chalk = require('chalk')
+// const Jwt = require('jsonwebtoken')
+const Joi = require('@hapi/joi')
+
+// const knex = require('knex')
+// const knexConfig = require('../../knexfile')[process.env.NODE_ENV]
+// const KenxCon = knex(knexConfig)
+// const Uuid = require('node-uuid')
+const Config = require('../../config')
+const restHapiConfig = Config.get('/restHapiConfig')
+const Task = require('../models/content-review.model')
+// const Session = require('../models/session.model')
+const fs = require('fs')
+// const path = require('path')
+
+module.exports = function(server, knex, logger) {
+  // const Log = logger.bind(Chalk.magenta('task-upload.api'))
+  // Log.debug('api')
+
+  const taskUploadHandler = async (request, h) => {
+    // const Log = logger.bind(Chalk.magenta('taskUploadHandler'))
+    const payload = request.payload
+    const folderName = payload['file'].hapi.filename.split('.')
+    return new Promise((resolve, reject) => {
+      payload['file'].pipe(
+        fs
+          .createWriteStream(
+            __dirname + '../../../uploads/' + payload['file'].hapi.filename
+          )
+          .on('finish', () => {
+            fs.createReadStream(`./uploads/${payload['file'].hapi.filename}`)
+              // Unzip the folder in same Uploads directory
+              .pipe(unzipper.Extract({ path: `./uploads/` }))
+              .on('finish', () => {
+                // Browse through directory and search HTML file
+                fs.readdir(`./uploads/${folderName[0]}`, (err, files) => {
+                  {
+                    if (err) {
+                      reject(codes.err)
+                    }
                   }
-                  console.log("The file was saved!", `./uploads/${folderName[0]}/${htmlFile}`, res);
-                  return (codes.success);
-                });
-              }
-            })
+                  const imageFileArray = []
+                  let htmlFile
+                  // Find all image files so that afterwards can be converted into base64
+                  for (const i in files) {
+                    if (
+                      files[i].includes('.jpg') ||
+                      files[i].includes('.png')
+                    ) {
+                      // Put all imageFiles names in array
+                      imageFileArray.push(files[i])
+                    } else {
+                      htmlFile = files[i]
+                    }
+                  }
+                  fs.readFile(
+                    `./uploads/${folderName[0]}/${htmlFile}`,
+                    'utf8',
+                    (err, data) => {
+                      if (err) {
+                        reject(codes.err)
+                      } else {
+                        imageFileArray.forEach(imageFile => {
+                          const extn = imageFile.split('.')
+                          const imageAsBase64 = fs.readFileSync(
+                            `./uploads/${folderName[0]}/${imageFile}`,
+                            'base64'
+                          )
+                          const pathReplace =
+                            `data:image/${extn[1]};base64, ` + imageAsBase64
+                          data = data.replace(imageFile, pathReplace)
+                          // TODO:css changes pending
+                          const oldClass = "class='edocWCN'"
+                          const newStyle =
+                            " style='text-align: center;margin-top: 20px;margin-bottom: 15px;'"
+                          const oldCss = `<div class="edocWCNTitle">WARNING</div><div class="edocWCNBody">`
+                          const newCss = `<div style="background-color: #2596D1; color: #FFFFFF;font-size:100%;font-weight: bold;margin-bottom: 10px;padding: 5px">WARNING</div>`
+                          data = data.replace(oldCss, newCss)
+                        })
+                        fs.writeFile(
+                          `./uploads/${folderName[0]}/test.html`,
+                          data,
+                          function(err, result) {
+                            if (err) {
+                              reject(codes.err)
+                            }
+
+                            fs.rename(
+                              `./uploads/${folderName[0]}/test.html`,
+                              `./uploads/${folderName[0]}/${htmlFile}`,
+                              async function(err) {
+                                if (err) {
+                                  // console.log('ERROR: ' + err)
+                                  reject(codes.err)
+                                } else {
+                                  // TODO:after enbaling auth userDetails to be taken
+                                  const contentId = await Task.create({
+                                    taskName: payload.taskName,
+                                    fileName: `${htmlFile}`,
+                                    file: `${data}`,
+                                    createdBy: 'sudarshana',
+                                    status: 0
+                                  })
+
+                                  resolve({
+                                    id: contentId[0],
+                                    message:
+                                      'successfully uploaded and modified Zip!!!!',
+                                    code: 200
+                                  })
+                                }
+                              }
+                            )
+                          }
+                        )
+                      }
+                    }
+                  )
+                })
+              })
           })
-        })
-    }))
-}
-const codes = {
-  err: {
-    code: 402,
-    mesaage: "problem in adding modality"
-  },
-  success: {
-    code: 200,
-    message: "Successfully added modality",
+      )
+    })
   }
+
+  // task upload api
+  ;(function() {
+    const Log = logger.bind(Chalk.magenta('Task/upload'))
+
+    Log.note('Generating Task zip Upload endpoint')
+
+    const auth = {
+      strategy: restHapiConfig.authStrategy
+    }
+
+    let headersValidation
+
+    if (restHapiConfig.authStrategy) {
+      headersValidation = Joi.object({
+        authorization: Joi.string().required()
+      }).options({
+        allowUnknown: true
+      })
+    } else {
+      headersValidation = Joi.object().options({
+        allowUnknown: true
+      })
+    }
+
+    const authHeadersValidation = Object.assign(headersValidation, {})
+
+    server.route({
+      method: 'POST',
+      path: '/ContentReview/upload',
+      config: {
+        handler: taskUploadHandler,
+        // auth: auth,
+        cors: restHapiConfig.cors,
+        description: 'Task zip Upload and modify HTML',
+        tags: ['api', 'Philips', 'upload'],
+        payload: {
+          output: 'stream',
+          parse: true,
+          allow: 'multipart/form-data', // important,
+          maxBytes: 1000 * 1000 * 5
+        },
+
+        plugins: {
+          'hapi-swagger': {
+            responseMessages: [
+              { code: 200, message: 'Success' },
+              { code: 400, message: 'Bad Request' },
+              { code: 404, message: 'Not Found' },
+              { code: 500, message: 'dfgdfgf Internal Server Error' }
+            ]
+          }
+        }
+      }
+    })
+  })()
 }
