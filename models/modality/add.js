@@ -1,5 +1,5 @@
 
-const Knex = require('../../knexFile')
+//const Knex = require('../../knexFile')
 
 const codes = {
     err: {
@@ -21,7 +21,7 @@ module.exports = async (connection, payload, save) => {
         comment: comment
     }]
 
-    const trx = await Knex.transaction();
+    //const trx = await Knex.transaction();
     const trans =  await trx('modality').insert(modality)
     console.debug('trans', trans)
     console.debug('trx.isCompleted()', trx.isCompleted())
