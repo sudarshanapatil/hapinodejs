@@ -45,7 +45,7 @@ const save = (connection, userId, serviceType, serviceTypeName, actionType) => {
 
 const init = async () => {
     const server = Hapi.server({
-        port: 7000 ,
+        port: process.env.PORT || 7000 ,
         host: 'localhost',
         routes: { cors: true }
     });
