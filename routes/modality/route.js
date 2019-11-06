@@ -9,10 +9,16 @@ exports.modRoutes = (connection, save) => {
                 notes: 'Returns an array of modalities',
                 tags: ['api'],
             },
-            handler: async function (request, h) {
-                let data = await Modality.list(connection)
-                return data;
+            handler:async function (request, h) {
+               return h.file('test.PNG')
+               // return(200)
             }
+            // handler: {
+            //     file: {
+            //         path: 'test.PNG',
+            //        // confine: false
+            //       }
+            // }
         },
         {
             method: 'POST',

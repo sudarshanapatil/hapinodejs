@@ -35,6 +35,6 @@ connection.connect();
 //drop table modality;
 //create table role (r  oleId int not null auto_increment,name varchar(40),description varchar(200))
 
-//create table user (userId int not null,userEmail varchar(200),userPassword varchar(200),createTime timestamp ,username varchar(200),
-//roleId int,accessType varchar(200),validityStart date,validityEnd date,active int,access_level varchar(200),primary key(userId),
-//FOREIGN KEY (roleId) REFERENCES role(roleId),FOREIGN KEY (access_level) REFERENCES access_level(access_level)); 
+// create table user (userId int not null,userEmail varchar(200),userPassword varchar(200),createTime timestamp ,username varchar(200),
+// roleId int,accessType varchar(200),validityStart date,validityEnd date,active int,access_level int,primary key(userId),
+// FOREIGN KEY (roleId) REFERENCES role(roleId),FOREIGN KEY (access_level) REFERENCES access_level(access_level)); 

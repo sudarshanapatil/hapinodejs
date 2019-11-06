@@ -11,7 +11,7 @@ const connection = MySQL.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'sudri@123',
-    database: 'demo'
+    database: 'database_dev'
 });
 
 //connect to SQL server
@@ -45,7 +45,7 @@ const save = (connection, userId, serviceType, serviceTypeName, actionType) => {
 
 const init = async () => {
     const server = Hapi.server({
-        port: 3000,
+        port: 7000,
         host: 'localhost',
         routes: { cors: true }
     });

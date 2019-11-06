@@ -11,7 +11,7 @@ const codes = {
 module.exports = (connection) => {
     //console.log(connection,"==connection")
     return new Promise((resolve, reject) => {
-        connection.query("select * from modality limit 100", (err, res, feild) => {
+        connection.query("select * from philipsProduct", (err, res, feild) => {
             if (err)
                 reject(codes.err)
             else {
