@@ -4,7 +4,7 @@ const Hapi = require('@hapi/hapi');
 const Inert = require('inert');
 const Vision = require('vision');
 const HapiSwagger = require('hapi-swagger');
-const MySQL = require('mysql');
+//const MySQL = require('mysql');
 const cors = require('cors')
 const moment = require('moment')
 // const connection = MySQL.createConnection({
@@ -46,7 +46,7 @@ const save = (connection, userId, serviceType, serviceTypeName, actionType) => {
 const init = async () => {
     const server = Hapi.server({
         port: process.env.PORT || 5000 ,
-        host: '127.0.0.1',
+        host: '0.0.0.0',
         routes: { cors: true }
     });
     await server.register([
