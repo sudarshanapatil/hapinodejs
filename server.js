@@ -7,16 +7,16 @@ const HapiSwagger = require('hapi-swagger');
 const MySQL = require('mysql');
 const cors = require('cors')
 const moment = require('moment')
-const connection = MySQL.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'sudri@123',
-    database: 'database_dev'
-});
+// const connection = MySQL.createConnection({
+//     // host: 'localhost',
+//     // user: 'root',
+//     // password: 'sudri@123',
+//     // database: 'database_dev'
+// });
 
 //connect to SQL server
-connection.connect()
-
+// connection.connect()
+let connection=""
 const { configureRoutes } = require('./route')
 //For API Documentation
 const swaggerOptions = {
@@ -45,7 +45,7 @@ const save = (connection, userId, serviceType, serviceTypeName, actionType) => {
 
 const init = async () => {
     const server = Hapi.server({
-        port: 7000,
+        port: 7000 ,
         host: 'localhost',
         routes: { cors: true }
     });
